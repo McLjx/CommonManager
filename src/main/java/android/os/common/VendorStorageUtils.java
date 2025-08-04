@@ -7,32 +7,32 @@ import android.text.TextUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CommonUtils {
-    private static volatile CommonUtils instance;
+public class VendorStorageUtils {
+    private static volatile VendorStorageUtils instance;
     private final Context appContext;
-    public static CommonManager manager;
+    private VendorStorage mVendorStorage;
     @SuppressLint("WrongConstant")
-    private CommonUtils(Context context) {
+    private VendorStorageUtils(Context context) {
         // 使用Application Context避免内存泄漏
         this.appContext = context.getApplicationContext();
         // 初始化操作...
-        manager=(CommonManager)context.getSystemService(MyContent.COMMON);
+        mVendorStorage=new VendorStorage();
     }
 
-    public static CommonUtils getInstance(Context context) {
+    public static VendorStorageUtils getInstance(Context context) {
         if (instance == null) {
-            synchronized (CommonUtils.class) {
+            synchronized (VendorStorageUtils.class) {
                 if (instance == null) {
-                    instance = new CommonUtils(context);
+                    instance = new VendorStorageUtils(context);
                 }
             }
         }
         return instance;
     }
     public String getSpKey() {
-        manager=(CommonManager)appContext.getSystemService(MyContent.COMMON);
-        if (manager!=null) {
-            String type = manager.readVendorStorage(MyContent.KEY_PRODUCTION_TESTING_ID);
+
+        if (mVendorStorage!=null) {
+            String type = mVendorStorage.readVendorStorage(MyContent.KEY_PRODUCTION_TESTING_ID);
             if (!TextUtils.isEmpty(type)) {
                 Pattern pattern = Pattern.compile("\\d+\\.?\\d*");
                 Matcher matcher = pattern.matcher(type);
@@ -50,7 +50,7 @@ public class CommonUtils {
     }
 
     public  int getType(){
-        String type = manager.readVendorStorage(MyContent.KEY_PRODUCTION_TESTING_ID);
+        String type = mVendorStorage.readVendorStorage(MyContent.KEY_PRODUCTION_TESTING_ID);
         if (!TextUtils.isEmpty(type)) {
             Pattern pattern = Pattern.compile("\\d+\\.?\\d*");
             Matcher matcher = pattern.matcher(type);
@@ -66,7 +66,7 @@ public class CommonUtils {
     }
 
     public  void setType(int type){
-        manager.writeVendorStorage(""+type,MyContent.KEY_PRODUCTION_TESTING_ID);
+        mVendorStorage.writeVendorStorage(""+type,MyContent.KEY_PRODUCTION_TESTING_ID);
     }
 
 }
